@@ -49,9 +49,11 @@ SceneNode::~SceneNode() {
 	}
 }
 
-void SceneNode::intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude, glm::mat4 transSoFar, glm::mat4 rottransSoFar) {
+void SceneNode::intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude/*, glm::mat4 transSoFar, glm::mat4 rottransSoFar*/) {
 
-	float t = INT_MAX;
+	// TODO e-bonn -> hierarchy intersection needs to be fixed, doesn't work properly at the moment
+
+/*	float t = INT_MAX;
 	
 	// transform the eye and direction and then create a new eye .. to be propagated through the children
 	vec3 newEye = vec3(invtrans * vec4(ray->eye,1.0f));
@@ -82,7 +84,34 @@ void SceneNode::intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionDat
 	{
 		child->intersectsWithAnyNode(&r, child, idata, exclude, transSoFar, rottransSoFar);
 	}
+	node->intersectsWithAnyNode(ray, node, idata, exclude);*/
+
+	float t = INT_MAX;
 	
+	// transform the eye and direction and then create a new eye .. to be propagated through the children
+	vec3 newEye = vec3(invtrans * vec4(ray->eye,1.0f));
+	vec3 newDir = vec3(invtrans * vec4(ray->direction,1.0f));
+	Ray r(newEye,newDir);
+	
+	GeometryNode *gnode;
+	if(node->m_nodeType == NodeType::GeometryNode)
+	{
+		gnode = static_cast<GeometryNode*>(node);
+		t = gnode->m_primitive->intersection(&r);
+		if(t != INT_MAX && node->m_nodeId != exclude.nodeId && t < exclude.t && t < idata.t)
+		{
+			gnode->m_primitive->intersectionFaceNormal = vec3(invtrans * vec4(gnode->m_primitive->intersectionFaceNormal,1.0f));
+			idata.pmat = static_cast<PhongMaterial*>(gnode->m_material);
+			idata.t = t;
+			idata.prim = gnode->m_primitive;
+			idata.nodeId = node->m_nodeId;
+		}
+	}
+	//cout << "node_id: " << node->m_nodeId << ", idata.pmat: " << idata.pmat << ", t: " << idata.t << endl;
+	for(SceneNode *child : node->children)
+	{
+		child->intersectsWithAnyNode(&r, child, idata, exclude);
+	}
 }
 
 //---------------------------------------------------------------------------------------

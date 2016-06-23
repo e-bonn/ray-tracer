@@ -8,11 +8,11 @@
 using namespace std;
 using namespace glm;
 
-static const int MAX_DEPTH = 1;
+static const int MAX_DEPTH = 4;
 
 void intersectsWithAny(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude)
 {	
-	node->intersectsWithAnyNode(ray, node, idata, exclude, mat4(), mat4());
+	node->intersectsWithAnyNode(ray, node, idata, exclude/*, mat4(), mat4()*/);
 }
 
 double getLightFactorKD(const Light *light, Ray *lightray, const IntersectionData idata)
@@ -50,6 +50,24 @@ bool lightObstructed(Ray *lightRay, SceneNode *node, IntersectionData idata)
 	else return false;
 }
 
+void drawLoadBar(int percentageDone)
+{
+	system("clear");
+	cout << "[";
+	for(int i = 0; i < percentageDone; i++)
+	{
+		cout << "=";
+	}
+	cout << ">";
+	for(int i = 0; i < 100-percentageDone; i++)
+	{
+		cout << " ";
+	}
+	cout << "]";
+	cout << percentageDone << "% complete" << endl;
+
+}
+
 void A4_Render(
 		// What to render
 		SceneNode * root,
@@ -67,24 +85,6 @@ void A4_Render(
 		const glm::vec3 & ambient,
 		const std::list<Light *> & lights
 ) {
-
-  // Fill in raytracing code here...
-
-  std::cout << "Calling A4_Render(\n" <<
-		  "\t" << *root <<
-          "\t" << "Image(width:" << image.width() << ", height:" << image.height() << ")\n"
-          "\t" << "eye:  " << glm::to_string(eye) << std::endl <<
-		  "\t" << "view: " << glm::to_string(view) << std::endl <<
-		  "\t" << "up:   " << glm::to_string(up) << std::endl <<
-		  "\t" << "fovy: " << fovy << std::endl <<
-          "\t" << "ambient: " << glm::to_string(ambient) << std::endl <<
-		  "\t" << "lights{" << std::endl;
-
-	for(const Light * light : lights) {
-		std::cout << "\t\t" <<  *light << std::endl;
-	}
-	std::cout << "\t}" << std::endl;
-	std:: cout <<")" << std::endl;
 
 	float d = 100.0f;
 	float z;
@@ -119,7 +119,7 @@ void A4_Render(
 	trans2 = glm::translate(trans2, eye);
 
 	for (uint y = 0; y < nx; ++y) {
-		if(100*y/nx != 100*(y-1)/nx)cout << 100*y/nx << "% complete" << endl;
+		drawLoadBar(100*y/nx);
 		for (uint x = 0; x < ny; ++x) {
 			idata = IntersectionData();
 			coord = glm::vec4(x,y,0,1);
@@ -136,7 +136,7 @@ void A4_Render(
 				idata = IntersectionData();
 				intersectsWithAny(&ray, root, idata, IntersectionData());
 				
-				glm::vec3 intersectionPt = idata.pt;//ray.eye + (idata.t * ray.direction);
+				glm::vec3 intersectionPt = ray.eye + (idata.t * ray.direction);
 
 				if(!idata.pmat && depth == 0)
 				{
@@ -183,5 +183,22 @@ void A4_Render(
 			}
 		}
 	}
-	cout << "100% complete" << endl;
+	drawLoadBar(100);
+
+  	std::cout << "Calling A4_Render(\n" <<
+		  "\t" << *root <<
+          "\t" << "Image(width:" << image.width() << ", height:" << image.height() << ")\n"
+          "\t" << "eye:  " << glm::to_string(eye) << std::endl <<
+		  "\t" << "view: " << glm::to_string(view) << std::endl <<
+		  "\t" << "up:   " << glm::to_string(up) << std::endl <<
+		  "\t" << "fovy: " << fovy << std::endl <<
+          "\t" << "ambient: " << glm::to_string(ambient) << std::endl <<
+		  "\t" << "lights{" << std::endl;
+
+	for(const Light * light : lights) {
+		std::cout << "\t\t" <<  *light << std::endl;
+	}
+
+	std::cout << "\t}" << std::endl;
+	std:: cout <<")" << std::endl;
 }
