@@ -1,4 +1,7 @@
 # ray-tracer
 
-To build the project, type premake4 gmake -> make at the root to build the shared code.
-Next, type premake4 gmake -> make in the src directory to build the project code.
+To build and run the project use the bash script `src/runscript.sh`
+Provide the script with the name of an input script, so it know what to pass to the executable.
+
+If I wanted to build and pass `src/Assets/nonhier.lua` then I would `./runscript.sh nonhier`
+That would then open the generated image `nonhier.png` (assuming the name of the image generated is the same, which hopefully it should be)

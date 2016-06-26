@@ -56,14 +56,13 @@ public:
     void scale(const glm::vec3& amount);
     void translate(const glm::vec3& amount);
     
-    void intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude/*, glm::mat4 transSoFar, glm::mat4 rottransSoFar*/);
+    void intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude);
 
 	friend std::ostream & operator << (std::ostream & os, const SceneNode & node);
 
     // Transformations
     glm::mat4 trans;
     glm::mat4 invtrans;
-    glm::mat4 rottrans;
     
     std::list<SceneNode*> children;
 

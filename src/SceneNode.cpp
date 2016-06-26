@@ -49,42 +49,7 @@ SceneNode::~SceneNode() {
 	}
 }
 
-void SceneNode::intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude/*, glm::mat4 transSoFar, glm::mat4 rottransSoFar*/) {
-
-	// TODO e-bonn -> hierarchy intersection needs to be fixed, doesn't work properly at the moment
-
-/*	float t = INT_MAX;
-	
-	// transform the eye and direction and then create a new eye .. to be propagated through the children
-	vec3 newEye = vec3(invtrans * vec4(ray->eye,1.0f));
-	vec3 newDir = vec3(invtrans * vec4(ray->direction,0.0f));
-	Ray r(newEye,newDir);
-	
-	// transSoFar = transSoFar * trans;
-	// rottransSoFar = rottransSoFar * rottrans;
-
-	GeometryNode *gnode;
-	if(node->m_nodeType == NodeType::GeometryNode)
-	{
-		gnode = static_cast<GeometryNode*>(node);
-		t = gnode->m_primitive->intersection(&r);
-		if(t != INT_MAX && node->m_nodeId != exclude.nodeId && t < exclude.t && t < idata.t)
-		{
-			idata.pt = r.eye + (idata.t * r.direction);
-			idata.pt = vec3(trans * vec4(idata.pt,1.0f));
-			gnode->m_primitive->intersectionFaceNormal = vec3(transpose(inverse(rottrans)) * vec4(gnode->m_primitive->intersectionFaceNormal,0.0f));
-			idata.pmat = static_cast<PhongMaterial*>(gnode->m_material);
-			idata.t = t;
-			idata.prim = gnode->m_primitive;
-			idata.nodeId = node->m_nodeId;
-		}
-	}
-	//cout << "node_id: " << node->m_nodeId << ", idata.pmat: " << idata.pmat << ", t: " << idata.t << endl;
-	for(SceneNode *child : node->children)
-	{
-		child->intersectsWithAnyNode(&r, child, idata, exclude, transSoFar, rottransSoFar);
-	}
-	node->intersectsWithAnyNode(ray, node, idata, exclude);*/
+void SceneNode::intersectsWithAnyNode(Ray *ray, SceneNode *node, IntersectionData &idata, IntersectionData exclude) {
 
 	float t = INT_MAX;
 	
@@ -159,7 +124,6 @@ void SceneNode::rotate(char axis, float angle) {
 	}
 	mat4 rot_matrix = glm::rotate(degreesToRadians(angle), rot_axis);
 	set_transform( rot_matrix * trans );
-	rottrans = rot_matrix * rottrans;
 }
 
 //---------------------------------------------------------------------------------------
@@ -170,7 +134,6 @@ void SceneNode::scale(const glm::vec3 & amount) {
 //---------------------------------------------------------------------------------------
 void SceneNode::translate(const glm::vec3& amount) {
 	set_transform( glm::translate(amount) * trans );
-	rottrans = glm::translate(amount) * rottrans;
 }
 
 
