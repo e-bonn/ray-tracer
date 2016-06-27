@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # make any libs
-cd ..
+cd ../..
 premake4 gmake
 make
 
@@ -9,6 +9,8 @@ make
 cd src 
 premake4 gmake
 make
-./A4 "Assets/"$1".lua"
+
+cd Assets
+../A4 $1".lua"
 
 eog $1".png" &

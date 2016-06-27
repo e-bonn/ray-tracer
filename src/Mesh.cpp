@@ -66,7 +66,7 @@ float Mesh::intersection(Ray *ray)
 		intersectionFaceNormal = intersectionPt-boundingVolume->m_pos;
 		return t;
 	}
-	
+
 	if(t == INT_MAX) return min;
 	
 	for(auto &triangle : m_faces)
