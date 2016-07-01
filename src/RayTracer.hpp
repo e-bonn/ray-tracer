@@ -8,7 +8,7 @@
 #include "Primitive.hpp"
 #include "PhongMaterial.hpp"
 
-void A4_Render(
+void RayTrace(
 		// What to render
 		SceneNode * root,
 

@@ -3,7 +3,7 @@
 
 #include "GeometryNode.hpp"
 #include <math.h>
-#include "A4.hpp"
+#include "RayTracer.hpp"
 
 using namespace std;
 using namespace glm;
@@ -52,7 +52,7 @@ bool lightObstructed(Ray *lightRay, SceneNode *node, IntersectionData idata)
 
 void drawLoadBar(int percentageDone)
 {
-	system("clear");
+	cout << "\r";
 	cout << "[";
 	for(int i = 0; i < percentageDone; i++)
 	{
@@ -64,11 +64,10 @@ void drawLoadBar(int percentageDone)
 		cout << " ";
 	}
 	cout << "]";
-	cout << percentageDone << "% complete" << endl;
-
+	cout << percentageDone << "% complete" << flush;
 }
 
-void A4_Render(
+void RayTrace(
 		// What to render
 		SceneNode * root,
 
@@ -117,6 +116,23 @@ void A4_Render(
 		vec4(0,0,0,1)
 	);
 	trans2 = glm::translate(trans2, eye);
+
+	std::cout << "Calling RayTrace(\n" <<
+		  "\t" << *root <<
+          "\t" << "Image(width:" << image.width() << ", height:" << image.height() << ")\n"
+          "\t" << "eye:  " << glm::to_string(eye) << std::endl <<
+		  "\t" << "view: " << glm::to_string(view) << std::endl <<
+		  "\t" << "up:   " << glm::to_string(up) << std::endl <<
+		  "\t" << "fovy: " << fovy << std::endl <<
+          "\t" << "ambient: " << glm::to_string(ambient) << std::endl <<
+		  "\t" << "lights{" << std::endl;
+
+	for(const Light * light : lights) {
+		std::cout << "\t\t" <<  *light << std::endl;
+	}
+
+	std::cout << "\t}" << std::endl;
+	std:: cout <<")" << std::endl;
 
 	for (uint y = 0; y < nx; ++y) {
 		drawLoadBar(100*y/nx);
@@ -184,21 +200,5 @@ void A4_Render(
 		}
 	}
 	drawLoadBar(100);
-
-  	std::cout << "Calling A4_Render(\n" <<
-		  "\t" << *root <<
-          "\t" << "Image(width:" << image.width() << ", height:" << image.height() << ")\n"
-          "\t" << "eye:  " << glm::to_string(eye) << std::endl <<
-		  "\t" << "view: " << glm::to_string(view) << std::endl <<
-		  "\t" << "up:   " << glm::to_string(up) << std::endl <<
-		  "\t" << "fovy: " << fovy << std::endl <<
-          "\t" << "ambient: " << glm::to_string(ambient) << std::endl <<
-		  "\t" << "lights{" << std::endl;
-
-	for(const Light * light : lights) {
-		std::cout << "\t\t" <<  *light << std::endl;
-	}
-
-	std::cout << "\t}" << std::endl;
-	std:: cout <<")" << std::endl;
+	cout << endl;
 }

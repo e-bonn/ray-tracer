@@ -11,6 +11,6 @@ premake4 gmake
 make
 
 cd Assets
-../A4 $1".lua"
+../RayTracer $1".lua"
 
 eog $1".png" &
