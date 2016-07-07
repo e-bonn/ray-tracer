@@ -8,6 +8,7 @@
 #include "Primitive.hpp"
 #include "PhongMaterial.hpp"
 
+
 void RayTrace(
 		// What to render
 		SceneNode * root,
@@ -26,30 +27,45 @@ void RayTrace(
 		const std::list<Light *> & lights
 );
 
-// todo ebonn
+class RayTracer;
+
+struct ThreadParams
+{
+	ThreadParams(){}
+	ThreadParams(int xX, int yY, RayTracer *rt) : ny(xX), y(yY), myRayTracer(rt) {}
+	int ny;
+	int y;
+	RayTracer *myRayTracer;
+};
+
 class RayTracer
 {
 public:
 
 	RayTracer(	glm::mat4 trans1, glm::mat4 rot, glm::mat4 scale, 
 				glm::mat4 trans2, glm::vec3 ambient, glm::vec3 eye,
-				SceneNode *root);
+				SceneNode *root, const std::list<Light *> & lights, 
+				Image * image);
 	~RayTracer();
 
-	void shootRay(int x, int y, const std::list<Light *> & lights, Image & image);
-
+	void shootRay(int x, int y);
 	glm::vec4 calculateWorldCoord(glm::vec4 coord);
+
+	static void * shoot(void * params);
 
 private:
 
-	glm::mat4 m_trans1;
-	glm::mat4 m_rot;
-	glm::mat4 m_scale;
-	glm::mat4 m_trans2;
-	glm::vec3 m_ambient;
-	glm::vec3 m_eye;
+	glm::mat4 	m_trans1;
+	glm::mat4 	m_rot;
+	glm::mat4 	m_scale;
+	glm::mat4 	m_trans2;
+	glm::vec3 	m_ambient;
+	glm::vec3 	m_eye;
 
-	SceneNode *m_root;
+	Image 		*m_image;
+	std::list<Light *> m_lights;
+
+	SceneNode 	*m_root;
 
 	void intersectsWithAny(Ray *ray, IntersectionData &idata, IntersectionData exclude);
 	double getLightFactorKD(const Light *light, Ray *lightray, const IntersectionData idata);
