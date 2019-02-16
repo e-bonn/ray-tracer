@@ -138,21 +138,9 @@ void RayTracer::shootRay(int x, int y, const std::list<Light *> & lights, Image 
 	}
 }
 
-void drawLoadBar(int percentageDone)
+void outputPercentage(int percentageDone, int np)
 {
-	cout << "\r";
-	cout << "[";
-	for(int i = 0; i < percentageDone; i++)
-	{
-		cout << "=";
-	}
-	cout << ">";
-	for(int i = 0; i < 100-percentageDone; i++)
-	{
-		cout << " ";
-	}
-	cout << "]";
-	cout << percentageDone << "% complete" << flush;
+	cout << "[" << ((np%2) ? "\\" : "/") << "]" << percentageDone << "%\r" << flush;
 }
 
 void RayTrace(
@@ -216,13 +204,14 @@ void RayTrace(
 
 	std::vector<std::thread> myThreads;
 
+	int np = 0;
 	for (uint y = 0; y < nx; ++y) {
-		drawLoadBar(100*y/nx);
+		outputPercentage(100*y/nx, np++);
 		for (uint x = 0; x < ny; ++x) {
 			myRayTracer->shootRay(x,y,lights,image);
 		}
 	}
-	drawLoadBar(100);
+	outputPercentage(100, np++);
 	
 	for(std::thread &t : myThreads)
 	{
